@@ -1,3 +1,5 @@
+from math import ceil
+
 from dotenv import load_dotenv
 import os
 
@@ -7,7 +9,39 @@ from glowmarkt.glowmarkt_api_requests import (
     get_virtual_entity_id,
     get_resources,
     get_usage_readings,
+    get_first_datetime_reading,
 )
+
+from datetime import datetime, timedelta
+
+
+def get_date_ranges(start_datetime: str, end_datetime: str):
+    date_ranges = []
+
+    date_diff = (
+        datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
+        - datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
+    ).days
+
+    temp_start_date = datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
+    temp_end_date = datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S") + timedelta(
+        days=10
+    )
+    end_date_obj = datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
+
+    for i in range(ceil(date_diff / 10)):
+        if temp_end_date > end_date_obj:
+            temp_end_date = end_date_obj
+        date_ranges.append(
+            (
+                temp_start_date.strftime("%Y-%m-%dT%H:%M:%S"),
+                temp_end_date.strftime("%Y-%m-%dT%H:%M:%S"),
+            )
+        )
+        temp_start_date += timedelta(days=10)
+        temp_end_date += timedelta(days=10)
+
+    return date_ranges
 
 
 def main():
@@ -31,9 +65,35 @@ def main():
 
     resource_id: str = resources[0].resourceId
 
-    readings: list[Reading] = get_usage_readings(
-        application_id=bright_application_id, token=token, resource_id=resource_id
+    first_reading_time = datetime.fromtimestamp(
+        get_first_datetime_reading(
+            application_id=bright_application_id,
+            token=token,
+            resource_id=resource_id,
+        )
+    ).strftime("%Y-%m-%dT%H:%M:%S")
+
+    end_date = datetime.now().strftime(
+        "%Y-%m-%dT%H:%M:%S"
+    )  # TODO: Change to last recorded time from the api
+
+    date_ranges = get_date_ranges(
+        start_datetime=first_reading_time, end_datetime=end_date
     )
+
+    readings = []
+
+    for date_range in date_ranges:
+        date_range_start, date_range_end = date_range
+        readings.extend(
+            get_usage_readings(
+                application_id=bright_application_id,
+                token=token,
+                resource_id=resource_id,
+                from_date=date_range_start,
+                to_date=date_range_end,
+            )
+        )
 
     for reading in readings:
         print(reading)

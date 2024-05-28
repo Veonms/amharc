@@ -5,7 +5,11 @@ from glowmarkt.custom_exceptions.request_exceptions import (
     NoVeIdException,
     NoResourceException,
     NoReadingException,
+    NoDataException,
+    NoFirstDateException,
 )
+
+from datetime import datetime
 
 
 def api_get_request(url: str, headers: dict = None, params: dict = None):
@@ -96,9 +100,41 @@ def get_resources(application_id: str, token: str, veid: str) -> list[Resource]:
     return resources
 
 
+def get_first_datetime_reading(
+    application_id: str,
+    token: str,
+    resource_id: str,
+):
+    res = api_get_request(
+        url=f"https://api.glowmarkt.com/api/v0-1/resource/{resource_id}/first-time",
+        headers={
+            "Content-Type": "application/json",
+            "applicationId": application_id,
+            "token": token,
+        },
+    )
+
+    raw_data = res.get("data", None)
+
+    if raw_data is None:
+        raise NoDataException()
+
+    first_reading_datetime = raw_data.get("firstTs", None)
+
+    if first_reading_datetime is None:
+        raise NoFirstDateException()
+
+    return first_reading_datetime
+
+
 def get_usage_readings(
-    application_id: str, token: str, resource_id: str
+    application_id: str,
+    token: str,
+    resource_id: str,
+    from_date: str,
+    to_date: str,
 ) -> list[Reading]:
+
     res = api_get_request(
         url=f"https://api.glowmarkt.com/api/v0-1/resource/{resource_id}/readings?",
         headers={
@@ -107,8 +143,8 @@ def get_usage_readings(
             "token": token,
         },
         params={
-            "from": "2024-05-01T00:00:00",
-            "to": "2024-05-10T00:00:00",
+            "from": from_date,
+            "to": to_date,
             "period": "PT30M",
             "function": "sum",
         },
