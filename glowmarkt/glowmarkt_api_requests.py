@@ -7,6 +7,7 @@ from glowmarkt.custom_exceptions.request_exceptions import (
     NoReadingException,
     NoDataException,
     NoFirstDateException,
+    NoLastDateException,
 )
 
 from datetime import datetime
@@ -125,6 +126,33 @@ def get_first_datetime_reading(
         raise NoFirstDateException()
 
     return first_reading_datetime
+
+
+def get_latest_datetime_reading(
+    application_id: str,
+    token: str,
+    resource_id: str,
+):
+    res = api_get_request(
+        url=f"https://api.glowmarkt.com/api/v0-1/resource/{resource_id}/last-time",
+        headers={
+            "Content-Type": "application/json",
+            "applicationId": application_id,
+            "token": token,
+        },
+    )
+
+    raw_data = res.get("data", None)
+
+    if raw_data is None:
+        raise NoDataException()
+
+    last_reading_datetime = raw_data.get("lastTs", None)
+
+    if last_reading_datetime is None:
+        raise NoLastDateException()
+
+    return last_reading_datetime
 
 
 def get_usage_readings(

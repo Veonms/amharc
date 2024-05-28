@@ -10,6 +10,7 @@ from glowmarkt.glowmarkt_api_requests import (
     get_resources,
     get_usage_readings,
     get_first_datetime_reading,
+    get_latest_datetime_reading,
 )
 
 from datetime import datetime, timedelta
@@ -73,9 +74,13 @@ def main():
         )
     ).strftime("%Y-%m-%dT%H:%M:%S")
 
-    end_date = datetime.now().strftime(
-        "%Y-%m-%dT%H:%M:%S"
-    )  # TODO: Change to last recorded time from the api
+    end_date = datetime.fromtimestamp(
+        get_latest_datetime_reading(
+            application_id=bright_application_id,
+            token=token,
+            resource_id=resource_id,
+        )
+    ).strftime("%Y-%m-%dT%H:%M:%S")
 
     date_ranges = get_date_ranges(
         start_datetime=first_reading_time, end_datetime=end_date

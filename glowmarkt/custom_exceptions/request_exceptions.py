@@ -16,3 +16,7 @@ class NoDataException(Exception):
 
 class NoFirstDateException(Exception):
     pass
+
+
+class NoLastDateException(Exception):
+    pass
