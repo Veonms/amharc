@@ -4,16 +4,20 @@ from dotenv import load_dotenv
 import os
 
 from data_model import Resource
-from glowmarkt.src.glowmarkt_api_requests import (
-    get_token,
-    get_virtual_entity_id,
-    get_resources,
-    get_usage_readings,
-    get_first_datetime_reading,
-    get_latest_datetime_reading,
-)
+
 
 from datetime import datetime, timedelta
+
+from glowmarkt.src.glowmarkt_api_requests.authentication import get_token
+from glowmarkt.src.glowmarkt_api_requests.resources import (
+    get_first_datetime_reading,
+    get_latest_datetime_reading,
+    get_usage_readings,
+)
+from glowmarkt.src.glowmarkt_api_requests.virtual_entity import (
+    get_virtual_entity_id,
+    get_resources,
+)
 
 
 def get_date_ranges(start_datetime: str, end_datetime: str):
