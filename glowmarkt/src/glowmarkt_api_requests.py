@@ -1,7 +1,7 @@
 import requests
 import json
 from data_model import Resource, Reading
-from glowmarkt.custom_exceptions.request_exceptions import (
+from glowmarkt.src.custom_exceptions.request_exceptions import (
     NoVeIdException,
     NoResourceException,
     NoReadingException,
@@ -9,8 +9,6 @@ from glowmarkt.custom_exceptions.request_exceptions import (
     NoFirstDateException,
     NoLastDateException,
 )
-
-from datetime import datetime
 
 
 def api_get_request(url: str, headers: dict = None, params: dict = None):

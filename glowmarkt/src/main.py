@@ -3,8 +3,8 @@ from math import ceil
 from dotenv import load_dotenv
 import os
 
-from data_model import Resource, Reading
-from glowmarkt.glowmarkt_api_requests import (
+from data_model import Resource
+from glowmarkt.src.glowmarkt_api_requests import (
     get_token,
     get_virtual_entity_id,
     get_resources,
