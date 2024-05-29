@@ -31,10 +31,8 @@ class GlowmarktClient:
         self.password = password
         self.application_id = application_id
         self.session = session
-        self.token = self._retrieve_token()
-        self.veid = self._retrieve_virtual_entity_id()
 
-    def _retrieve_token(self) -> str:
+    def _retrieve_token(self) -> None:
         res = self.session.post(
             url="https://api.glowmarkt.com/api/v0-1/auth",
             headers={
@@ -54,7 +52,28 @@ class GlowmarktClient:
         if token is None:
             raise Exception("No token retrieved.")
 
-        return token
+        self.token = token
+
+    def _retrieve_virtual_entity_id(self) -> None:
+        res = self._execute_get_request(
+            url="https://api.glowmarkt.com/api/v0-1/virtualentity",
+            headers={
+                "Content-Type": "application/json",
+                "applicationId": self.application_id,
+                "token": self.token,
+            },
+        )
+
+        veid = res[0].get("veId", None)
+
+        if veid is None:
+            raise NoVeIdException(f"No veId retrieved from the request: {res}")
+
+        self.veid = veid
+
+    def retrieve_credentials(self) -> None:
+        self._retrieve_token()
+        self._retrieve_virtual_entity_id()
 
     def _execute_get_request(
         self, url: str, headers: dict, params: dict = None
@@ -70,23 +89,6 @@ class GlowmarktClient:
             )
 
         return res.json()
-
-    def _retrieve_virtual_entity_id(self) -> str:
-        res = self._execute_get_request(
-            url="https://api.glowmarkt.com/api/v0-1/virtualentity",
-            headers={
-                "Content-Type": "application/json",
-                "applicationId": self.application_id,
-                "token": self.token,
-            },
-        )
-
-        veid = res[0].get("veId", None)
-
-        if veid is None:
-            raise NoVeIdException(f"No veId retrieved from the request: {res}")
-
-        return veid
 
     def retrieve_resources(self) -> list[Resource]:
         res = self._execute_get_request(

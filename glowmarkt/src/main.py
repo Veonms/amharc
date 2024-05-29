@@ -31,6 +31,7 @@ def main():
         application_id=bright_application_id,
         session=requests.Session(),
     )
+    glowmarkt_client.retrieve_credentials()
 
     resources = glowmarkt_client.retrieve_resources()
 
