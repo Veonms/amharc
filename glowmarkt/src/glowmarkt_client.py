@@ -55,6 +55,21 @@ class GlowmarktClient:
 
         self.token = token
 
+    def _execute_get_request(
+        self, url: str, headers: dict, params: dict = None
+    ) -> dict:
+        if params is None:
+            params = {}
+
+        res = self.session.get(url=url, headers=headers, params=params)
+
+        if res.status_code != 200:
+            raise requests.HTTPError(
+                f"Request failed with status code {res.status_code}. Reason: {res.reason}"
+            )
+
+        return res.json()
+
     def _retrieve_virtual_entity_id(self) -> None:
         res = self._execute_get_request(
             url="https://api.glowmarkt.com/api/v0-1/virtualentity",
@@ -75,21 +90,6 @@ class GlowmarktClient:
     def retrieve_credentials(self) -> None:
         self._retrieve_token()
         self._retrieve_virtual_entity_id()
-
-    def _execute_get_request(
-        self, url: str, headers: dict, params: dict = None
-    ) -> dict:
-        if params is None:
-            params = {}
-
-        res = self.session.get(url=url, headers=headers, params=params)
-
-        if res.status_code != 200:
-            raise requests.HTTPError(
-                f"Request failed with status code {res.status_code}. Reason: {res.reason}"
-            )
-
-        return res.json()
 
     def retrieve_resources(self) -> list[Resource]:
         res = self._execute_get_request(
