@@ -2,7 +2,7 @@ import pytest
 import requests
 
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
-from glowmarkt.tests.fixtures import MockResponse
+from glowmarkt.tests.test_glowmarkt_client.fixtures import MockResponse
 
 
 class MockSessionSuccessful:
