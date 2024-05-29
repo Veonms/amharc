@@ -20,3 +20,7 @@ class NoFirstDateException(Exception):
 
 class NoLastDateException(Exception):
     pass
+
+
+class NoTokenException(Exception):
+    pass

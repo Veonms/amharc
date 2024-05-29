@@ -11,6 +11,7 @@ from glowmarkt.src.custom_exceptions.request_exceptions import (
     NoFirstDateException,
     NoLastDateException,
     NoReadingException,
+    NoTokenException,
 )
 from glowmarkt.src.data_model import Resource, Reading
 
@@ -50,7 +51,7 @@ class GlowmarktClient:
         token = res.json().get("token", None)
 
         if token is None:
-            raise Exception("No token retrieved.")
+            raise NoTokenException("No token retrieved.")
 
         self.token = token
 
