@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from typing import Protocol
 
 import requests
 
@@ -14,12 +15,22 @@ from glowmarkt.src.custom_exceptions.request_exceptions import (
 from glowmarkt.src.data_model import Resource, Reading
 
 
+class Session(Protocol):
+    def post(self, url: str, headers: dict, data: str) -> any:
+        """Makes a POST request."""
+
+    def get(self, url: str, headers: dict, params: dict) -> any:
+        """Makes a GET request."""
+
+
 class GlowmarktClient:
-    def __init__(self, username: str, password: str, application_id: str) -> None:
+    def __init__(
+        self, username: str, password: str, application_id: str, session: Session
+    ) -> None:
         self.username = username
         self.password = password
         self.application_id = application_id
-        self.session = requests.Session()
+        self.session = session
         self.token = self._retrieve_token()
         self.veid = self._retrieve_virtual_entity_id()
 

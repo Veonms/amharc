@@ -1,5 +1,6 @@
 import os
 
+import requests
 from dotenv import load_dotenv
 
 from glowmarkt.src.custom_exceptions.credential_exceptions import (
@@ -28,6 +29,7 @@ def main():
         username=bright_username,
         password=bright_password,
         application_id=bright_application_id,
+        session=requests.Session(),
     )
 
     resources = glowmarkt_client.retrieve_resources()
