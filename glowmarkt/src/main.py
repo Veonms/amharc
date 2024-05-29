@@ -49,6 +49,7 @@ def main():
 
     readings = []
 
+    # TODO: Make API calls asynchronous
     for date_range in date_ranges:
         date_range_start, date_range_end = date_range
         readings.extend(
@@ -59,8 +60,9 @@ def main():
             )
         )
 
-    # TODO: Remove results where usage is 0
     for reading in readings:
+        if reading.value == 0:
+            continue
         print(reading)
 
 
