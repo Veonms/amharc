@@ -18,13 +18,6 @@ class MockResponse:
         }
 
 
-class MockSessionSuccessful:
-    def post(self, url: str, headers: dict, data: str) -> any:
-        return MockResponse(status_code=200, reason="OK", token="test-token")
-
-    def get(self, url: str, headers: dict, params: dict) -> any: ...
-
-
 class MockSession:
     def post(self, url: str, headers: dict, data: str) -> any:
         pass
