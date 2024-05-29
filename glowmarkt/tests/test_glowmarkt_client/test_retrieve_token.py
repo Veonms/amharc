@@ -25,22 +25,24 @@ class MockSessionSuccessful:
     def get(self, url: str, headers: dict, params: dict) -> any: ...
 
 
-class MockSessionUnsuccessfulNon200:
+class MockSession:
     def post(self, url: str, headers: dict, data: str) -> any:
-        return MockResponse(status_code=404, reason="Not found", token="test-token")
+        pass
 
-    def get(self, url: str, headers: dict, params: dict) -> any: ...
-
-
-class MockSessionUnsuccessfulNoToken:
-    def post(self, url: str, headers: dict, data: str) -> any:
-        return MockResponse(status_code=404, reason="Not found")
-
-    def get(self, url: str, headers: dict, params: dict) -> any: ...
+    def get(self, url: str, headers: dict, params: dict) -> any:
+        pass
 
 
-def test_retrieve_token_successful():
-    session = MockSessionSuccessful()
+def test_retrieve_token_successful(monkeypatch: pytest.MonkeyPatch):
+    session = MockSession()
+
+    def mock_request(*args, **kwargs):
+        return MockResponse(status_code=200, reason="OK", token="test-token")
+
+    monkeypatch.setattr(
+        "test_retrieve_token.MockSession.post",
+        mock_request,
+    )
 
     client = GlowmarktClient(
         username="username",
@@ -53,8 +55,18 @@ def test_retrieve_token_successful():
     assert client.token == "test-token"
 
 
-def test_retrieve_token_unsuccessful_non_200_status_code():
-    session = MockSessionUnsuccessfulNon200()
+def test_retrieve_token_unsuccessful_non_200_status_code(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    session = MockSession()
+
+    def mock_request(*args, **kwargs):
+        return MockResponse(status_code=404, reason="Not found", token="test-token")
+
+    monkeypatch.setattr(
+        "test_retrieve_token.MockSession.post",
+        mock_request,
+    )
 
     client = GlowmarktClient(
         username="username",
@@ -67,8 +79,18 @@ def test_retrieve_token_unsuccessful_non_200_status_code():
         client._retrieve_token()
 
 
-def test_retrieve_token_unsuccessful_no_token_in_response():
-    session = MockSessionUnsuccessfulNoToken()
+def test_retrieve_token_unsuccessful_no_token_in_response(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    session = MockSession()
+
+    def mock_request(*args, **kwargs):
+        return MockResponse(status_code=404, reason="Not found")
+
+    monkeypatch.setattr(
+        "test_retrieve_token.MockSession.post",
+        mock_request,
+    )
 
     client = GlowmarktClient(
         username="username",
