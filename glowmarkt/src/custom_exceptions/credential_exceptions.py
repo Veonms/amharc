@@ -1,0 +1,2 @@
+class NoCredentialsExistException(Exception):
+    pass

@@ -1,52 +1,12 @@
-from math import ceil
-
-from dotenv import load_dotenv
 import os
 
-from data_model import Resource
+from dotenv import load_dotenv
 
-
-from datetime import datetime, timedelta
-
-from glowmarkt.src.glowmarkt_api_requests.authentication import get_token
-from glowmarkt.src.glowmarkt_api_requests.resources import (
-    get_first_datetime_reading,
-    get_latest_datetime_reading,
-    get_usage_readings,
+from glowmarkt.src.custom_exceptions.credential_exceptions import (
+    NoCredentialsExistException,
 )
-from glowmarkt.src.glowmarkt_api_requests.virtual_entity import (
-    get_virtual_entity_id,
-    get_resources,
-)
-
-
-def get_date_ranges(start_datetime: str, end_datetime: str):
-    date_ranges = []
-
-    date_diff = (
-        datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
-        - datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
-    ).days
-
-    temp_start_date = datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S")
-    temp_end_date = datetime.strptime(start_datetime, "%Y-%m-%dT%H:%M:%S") + timedelta(
-        days=10
-    )
-    end_date_obj = datetime.strptime(end_datetime, "%Y-%m-%dT%H:%M:%S")
-
-    for i in range(ceil(date_diff / 10)):
-        if temp_end_date > end_date_obj:
-            temp_end_date = end_date_obj
-        date_ranges.append(
-            (
-                temp_start_date.strftime("%Y-%m-%dT%H:%M:%S"),
-                temp_end_date.strftime("%Y-%m-%dT%H:%M:%S"),
-            )
-        )
-        temp_start_date += timedelta(days=10)
-        temp_end_date += timedelta(days=10)
-
-    return date_ranges
+from glowmarkt.src.get_date_ranges import get_date_ranges
+from glowmarkt.src.glowmarkt_client import GlowmarktClient
 
 
 def main():
@@ -56,38 +16,35 @@ def main():
     bright_password = os.getenv("bright_password")
     bright_application_id = os.getenv("bright_application_id")
 
-    token: str = get_token(
-        application_id=bright_application_id,
+    if None in [bright_username, bright_password, bright_application_id]:
+        raise NoCredentialsExistException(
+            f"One or more credentials are None:"
+            f"Username: {bright_username}"
+            f"Password: {bright_password}"
+            f"Application ID: {bright_application_id}"
+        )
+
+    glowmarkt_client = GlowmarktClient(
         username=bright_username,
         password=bright_password,
+        application_id=bright_application_id,
     )
 
-    veid: str = get_virtual_entity_id(application_id=bright_application_id, token=token)
+    resources = glowmarkt_client.retrieve_resources()
 
-    resources: list[Resource] = get_resources(
-        application_id=bright_application_id, token=token, veid=veid
-    )
-
+    # TODO: Loop for all resources
     resource_id: str = resources[0].resourceId
 
-    first_reading_time = datetime.fromtimestamp(
-        get_first_datetime_reading(
-            application_id=bright_application_id,
-            token=token,
-            resource_id=resource_id,
-        )
-    ).strftime("%Y-%m-%dT%H:%M:%S")
+    first_timestamp = glowmarkt_client.retrieve_first_datetime_reading(
+        resource_id=resource_id
+    )
 
-    end_date = datetime.fromtimestamp(
-        get_latest_datetime_reading(
-            application_id=bright_application_id,
-            token=token,
-            resource_id=resource_id,
-        )
-    ).strftime("%Y-%m-%dT%H:%M:%S")
+    latest_timestamp = glowmarkt_client.retrieve_latest_datetime_reading(
+        resource_id=resource_id
+    )
 
     date_ranges = get_date_ranges(
-        start_datetime=first_reading_time, end_datetime=end_date
+        start_datetime=first_timestamp, end_datetime=latest_timestamp
     )
 
     readings = []
@@ -95,15 +52,14 @@ def main():
     for date_range in date_ranges:
         date_range_start, date_range_end = date_range
         readings.extend(
-            get_usage_readings(
-                application_id=bright_application_id,
-                token=token,
+            glowmarkt_client.retrieve_usage_readings(
                 resource_id=resource_id,
                 from_date=date_range_start,
                 to_date=date_range_end,
             )
         )
 
+    # TODO: Remove results where usage is 0
     for reading in readings:
         print(reading)
 
