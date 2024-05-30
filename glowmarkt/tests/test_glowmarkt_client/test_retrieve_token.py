@@ -2,6 +2,7 @@ import pytest
 import requests
 
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
+from glowmarkt.tests.fixtures import MockSession
 
 
 class MockResponse:
@@ -16,14 +17,6 @@ class MockResponse:
             "reason": self.reason,
             "token": self.token,
         }
-
-
-class MockSession:
-    def post(self, url: str, headers: dict, data: str) -> any:
-        pass
-
-    def get(self, url: str, headers: dict, params: dict) -> any:
-        pass
 
 
 def test_retrieve_token_successful(monkeypatch: pytest.MonkeyPatch):

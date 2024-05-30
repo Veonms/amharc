@@ -2,18 +2,11 @@ import pytest
 
 from glowmarkt.src.custom_exceptions.request_exceptions import NoVeIdException
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
-
-
-class MockSessionSuccessful:
-    def post(self, url: str, headers: dict, data: str) -> any:
-        pass
-
-    def get(self, url: str, headers: dict, params: dict) -> any:
-        pass
+from glowmarkt.tests.fixtures import MockSession
 
 
 def test_retrieve_veid_successful(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = MockSessionSuccessful()
+    session = MockSession()
     client = GlowmarktClient(
         username="username",
         password="password",
@@ -36,7 +29,7 @@ def test_retrieve_veid_successful(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_retrieve_veid_unsuccessful_no_veid(monkeypatch: pytest.MonkeyPatch) -> None:
-    session = MockSessionSuccessful()
+    session = MockSession()
     client = GlowmarktClient(
         username="username",
         password="password",
