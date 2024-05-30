@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Protocol
 
 import requests
@@ -142,7 +142,7 @@ class GlowmarktClient:
         if first_reading_datetime is None:
             raise NoFirstDateException()
 
-        return datetime.fromtimestamp(first_reading_datetime).strftime(
+        return datetime.fromtimestamp(first_reading_datetime, tz=UTC).strftime(
             "%Y-%m-%dT%H:%M:%S"
         )
 
@@ -166,7 +166,7 @@ class GlowmarktClient:
         if last_reading_datetime is None:
             raise NoLastDateException()
 
-        return datetime.fromtimestamp(last_reading_datetime).strftime(
+        return datetime.fromtimestamp(last_reading_datetime, tz=UTC).strftime(
             "%Y-%m-%dT%H:%M:%S"
         )
 

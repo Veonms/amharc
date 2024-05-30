@@ -12,7 +12,7 @@ def test_get_datetime_reading_successful(monkeypatch: pytest.MonkeyPatch):
     session = MockSession()
 
     def mock_request(*args, **kwargs):
-        return {"data": {"firstTs": 1717070400}}  # Thursday, 30 May 2024 13:00:00
+        return {"data": {"firstTs": 1717070400}}  # Thursday, 30 May 2024 12:00:00
 
     monkeypatch.setattr(
         "glowmarkt.src.glowmarkt_client.GlowmarktClient._execute_get_request",
@@ -30,7 +30,7 @@ def test_get_datetime_reading_successful(monkeypatch: pytest.MonkeyPatch):
 
     assert (
         client.retrieve_first_datetime_reading(resource_id="test-id")
-        == "2024-05-30T13:00:00"
+        == "2024-05-30T12:00:00"
     )
 
 
