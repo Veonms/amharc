@@ -2,7 +2,7 @@ import pytest
 
 from glowmarkt.src.custom_exceptions.request_exceptions import (
     NoDataException,
-    NoFirstDateException,
+    NoLastDateException,
 )
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
 from glowmarkt.tests.fixtures import MockSession
@@ -12,7 +12,7 @@ def test_get_datetime_reading_successful(monkeypatch: pytest.MonkeyPatch):
     session = MockSession()
 
     def mock_request(*args, **kwargs):
-        return {"data": {"firstTs": 1717070400}}  # Thursday, 30 May 2024 13:00:00
+        return {"data": {"lastTs": 1717070400}}  # Thursday, 30 May 2024 13:00:00
 
     monkeypatch.setattr(
         "glowmarkt.src.glowmarkt_client.GlowmarktClient._execute_get_request",
@@ -29,7 +29,7 @@ def test_get_datetime_reading_successful(monkeypatch: pytest.MonkeyPatch):
     client.token = "test-token"
 
     assert (
-        client.retrieve_first_datetime_reading(resource_id="test-id")
+        client.retrieve_latest_datetime_reading(resource_id="test-id")
         == "2024-05-30T13:00:00"
     )
 
@@ -55,7 +55,7 @@ def test_get_datetime_reading_unsuccessful_no_data(monkeypatch: pytest.MonkeyPat
     client.token = "test-token"
 
     with pytest.raises(NoDataException):
-        client.retrieve_first_datetime_reading(resource_id="test-id")
+        client.retrieve_latest_datetime_reading(resource_id="test-id")
 
 
 def test_get_datetime_reading_unsuccessful_no_timestamp(
@@ -80,5 +80,5 @@ def test_get_datetime_reading_unsuccessful_no_timestamp(
 
     client.token = "test-token"
 
-    with pytest.raises(NoFirstDateException):
-        client.retrieve_first_datetime_reading(resource_id="test-id")
+    with pytest.raises(NoLastDateException):
+        client.retrieve_latest_datetime_reading(resource_id="test-id")
