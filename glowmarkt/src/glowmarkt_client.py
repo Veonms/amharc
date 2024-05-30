@@ -108,14 +108,14 @@ class GlowmarktClient:
 
         resources = [
             Resource(
-                resourceTypeId=resource["resourceTypeId"],
-                name=resource["name"],
-                type=resource["dataSourceResourceTypeInfo"]["type"],
-                description=resource["description"],
-                dataSourceType=resource["dataSourceType"],
-                baseUnit=resource["baseUnit"],
-                resourceId=resource["resourceId"],
-                createdAt=resource["createdAt"],
+                resourceTypeId=resource.get("resourceTypeId", None),
+                name=resource.get("name", None),
+                type=resource.get("dataSourceResourceTypeInfo", None).get("type", None),
+                description=resource.get("description", None),
+                dataSourceType=resource.get("dataSourceType", None),
+                baseUnit=resource.get("baseUnit", None),
+                resourceId=resource.get("resourceId", None),
+                createdAt=resource.get("createdAt", None),
             )
             for resource in raw_resources
         ]
