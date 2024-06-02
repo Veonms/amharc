@@ -1,3 +1,5 @@
+import logging
+
 import requests
 
 from glowmarkt.src.credentials import load_credentials
@@ -22,11 +24,15 @@ def main():
         session=requests.Session(),
     )
 
-    valkey_client.create_connection()
+    try:
+        valkey_client.create_connection()
+    except Exception as err:
+        logging.error(f"Exception during valkey connection: {err}")
+        exit()
 
     cache_token, cache_veid = valkey_client.get_credentials()
 
-    if cache_token is None or cache_veid is None:
+    if not all([cache_token, cache_veid]):
         glowmarkt_client.retrieve_credentials()
         valkey_client.set_credentials(
             token=glowmarkt_client.token, veid=glowmarkt_client.token

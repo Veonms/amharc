@@ -16,13 +16,15 @@ def load_credentials() -> Credentials:
     valkey_host = os.getenv("valkey_host")
     valkey_port = os.getenv("valkey_port")
 
-    if None in [
-        bright_username,
-        bright_password,
-        bright_application_id,
-        valkey_host,
-        valkey_port,
-    ]:
+    if not all(
+        [
+            bright_username,
+            bright_password,
+            bright_application_id,
+            valkey_host,
+            valkey_port,
+        ]
+    ):
         raise NoCredentialsExistException(f"One or more credentials are None")
 
     return Credentials(
