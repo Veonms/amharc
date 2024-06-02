@@ -32,22 +32,22 @@ def main():
         valkey_client.set_credentials(
             token=glowmarkt_client.token, veid=glowmarkt_client.token
         )
+    else:
+        glowmarkt_client.token = cache_token
+        glowmarkt_client.veid = cache_veid
 
     resources = glowmarkt_client.retrieve_resources()
 
     # TODO: Loop for all resources
     resource_id: str = resources[0].resourceId
 
-    first_timestamp = glowmarkt_client.retrieve_first_datetime_reading(
-        resource_id=resource_id
-    )
-
-    latest_timestamp = glowmarkt_client.retrieve_latest_datetime_reading(
-        resource_id=resource_id
-    )
-
     date_ranges = get_date_ranges(
-        start_datetime=first_timestamp, end_datetime=latest_timestamp
+        start_datetime=glowmarkt_client.retrieve_first_datetime_reading(
+            resource_id=resource_id
+        ),
+        end_datetime=glowmarkt_client.retrieve_latest_datetime_reading(
+            resource_id=resource_id
+        ),
     )
 
     readings = []
