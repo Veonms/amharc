@@ -8,14 +8,11 @@ from glowmarkt.src.valkey_client import ValkeyClient
 
 
 def main():
-
     credentials: Credentials = load_credentials()
 
     valkey_client = ValkeyClient(
         host=credentials.valkey_host, port=credentials.valkey_port
     )
-
-    valkey_client.create_connection()
 
     # TODO: Close session from GlowmarktClient
     glowmarkt_client = GlowmarktClient(
@@ -24,6 +21,8 @@ def main():
         application_id=credentials.bright_application_id,
         session=requests.Session(),
     )
+
+    valkey_client.create_connection()
 
     cache_token, cache_veid = valkey_client.get_credentials()
 
