@@ -12,10 +12,10 @@ from glowmarkt.src.valkey_client import ValkeyClient
 def main():
     credentials: Credentials = load_credentials()
 
+    # Create clients
     valkey_client = ValkeyClient(
         host=credentials.valkey_host, port=credentials.valkey_port
     )
-
     # TODO: Close session from GlowmarktClient
     glowmarkt_client = GlowmarktClient(
         username=credentials.bright_username,
@@ -46,10 +46,11 @@ def main():
     # TODO: Loop for all resources
     resource_id: str = resources[0].resourceId
 
+    # TODO: Get delta from cache and compare
+    start_datetime = glowmarkt_client.retrieve_first_datetime_reading
+
     date_ranges = get_date_ranges(
-        start_datetime=glowmarkt_client.retrieve_first_datetime_reading(
-            resource_id=resource_id
-        ),
+        start_datetime=start_datetime(resource_id=resource_id),
         end_datetime=glowmarkt_client.retrieve_latest_datetime_reading(
             resource_id=resource_id
         ),
@@ -59,12 +60,12 @@ def main():
 
     # TODO: Make API calls asynchronous
     for date_range in date_ranges:
-        date_range_start, date_range_end = date_range
+        # TODO: return obj instead of tuple
         readings.extend(
             glowmarkt_client.retrieve_usage_readings(
                 resource_id=resource_id,
-                from_date=date_range_start,
-                to_date=date_range_end,
+                from_date=date_range[0],
+                to_date=date_range[1],
             )
         )
 
