@@ -1,44 +1,27 @@
-import os
-
 import requests
-from dotenv import load_dotenv
 
-from glowmarkt.src.custom_exceptions.credential_exceptions import (
-    NoCredentialsExistException,
-)
+from glowmarkt.src.credentials import load_credentials
+from glowmarkt.src.data_model import Credentials
 from glowmarkt.src.get_date_ranges import get_date_ranges
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
 from glowmarkt.src.valkey_client import ValkeyClient
 
 
 def main():
-    # TODO: Move credential handling to a separate function
-    # Get credentials
-    load_dotenv()
-    bright_username = os.getenv("bright_username")
-    bright_password = os.getenv("bright_password")
-    bright_application_id = os.getenv("bright_application_id")
-    valkey_host = os.getenv("valkey_host")
-    valkey_port = os.getenv("valkey_port")
 
-    if None in [
-        bright_username,
-        bright_password,
-        bright_application_id,
-        valkey_host,
-        valkey_port,
-    ]:
-        raise NoCredentialsExistException(f"One or more credentials are None")
+    credentials: Credentials = load_credentials()
 
-    valkey_client = ValkeyClient(host=valkey_host, port=valkey_port)
+    valkey_client = ValkeyClient(
+        host=credentials.valkey_host, port=credentials.valkey_port
+    )
 
     valkey_client.create_connection()
 
     # TODO: Close session from GlowmarktClient
     glowmarkt_client = GlowmarktClient(
-        username=bright_username,
-        password=bright_password,
-        application_id=bright_application_id,
+        username=credentials.bright_username,
+        password=credentials.bright_password,
+        application_id=credentials.bright_application_id,
         session=requests.Session(),
     )
 

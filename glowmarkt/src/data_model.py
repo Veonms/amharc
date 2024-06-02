@@ -2,6 +2,15 @@ from dataclasses import dataclass
 
 
 @dataclass
+class Credentials:
+    bright_username: str
+    bright_password: str
+    bright_application_id: str
+    valkey_host: str
+    valkey_port: str
+
+
+@dataclass
 class Resource:
     resourceTypeId: str
     name: str
