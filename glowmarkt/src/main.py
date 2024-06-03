@@ -3,7 +3,7 @@ import logging
 import requests
 
 from glowmarkt.src.credentials import load_credentials
-from glowmarkt.src.data_model import Credentials
+from glowmarkt.src.data_model import Credentials, CachedCredentials
 from glowmarkt.src.get_date_ranges import get_date_ranges
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
 from glowmarkt.src.valkey_client import ValkeyClient
@@ -36,10 +36,9 @@ def main():
         logging.error(f"Exception during valkey connection: {err}")
         exit()
 
-    # TODO: return obj, not tuple
-    cache_token, cache_veid = valkey_client.get_credentials()
+    cached_creds: CachedCredentials = valkey_client.get_credentials()
 
-    if not all([cache_token, cache_veid]):
+    if not all([cached_creds.bright_token, cached_creds.bright_veid]):
         logging.info("No credentials in cache: retrieving new credentials")
         glowmarkt_client.retrieve_credentials()
         valkey_client.set_credentials(
@@ -47,8 +46,8 @@ def main():
         )
     else:
         logging.info("Found credentials")
-        glowmarkt_client.token = cache_token.decode("utf-8")
-        glowmarkt_client.veid = cache_veid.decode("utf-8")
+        glowmarkt_client.token = cached_creds.bright_token
+        glowmarkt_client.veid = cached_creds.bright_veid
 
     resources = glowmarkt_client.retrieve_resources()
 

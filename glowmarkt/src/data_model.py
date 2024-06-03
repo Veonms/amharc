@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -8,6 +9,12 @@ class Credentials:
     bright_application_id: str
     valkey_host: str
     valkey_port: str
+
+
+@dataclass
+class CachedCredentials:
+    bright_veid: Optional[str]
+    bright_token: Optional[str]
 
 
 @dataclass

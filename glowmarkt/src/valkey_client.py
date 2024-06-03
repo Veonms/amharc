@@ -3,6 +3,8 @@ from typing import Optional
 
 import redis
 
+from glowmarkt.src.data_model import CachedCredentials
+
 
 class ValkeyClient:
     def __init__(self, host: str, port: str, db: int = 0):
@@ -34,14 +36,17 @@ class ValkeyClient:
             logging.error(f"Could not set credentials: {err}")
             raise err
 
-    def get_credentials(self) -> Optional[tuple[str, str]]:
+    def get_credentials(self) -> Optional[CachedCredentials]:
         try:
             token = self.connection.get("token")
             veid = self.connection.get("veid")
         except Exception as err:
             logging.warning(f"Could not retrieve credentials: {err}")
             return None
-        return token, veid
+        return CachedCredentials(
+            bright_token=token.decode("utf-8") if token else None,
+            bright_veid=veid.decode("utf-8") if veid else None,
+        )
 
     def set_delta(self, delta_key: str, delta_value: str) -> None:
         try:
