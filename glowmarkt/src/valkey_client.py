@@ -56,6 +56,8 @@ class ValkeyClient:
         except Exception as err:
             logging.error(f"Could not retrieve the delta: {err}")
             return None
+        if delta is not None:
+            return delta.decode("utf-8")
         return delta
 
     def set_virtual_entity_id(self, veid: str) -> None:

@@ -8,6 +8,12 @@ from glowmarkt.src.get_date_ranges import get_date_ranges
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
 from glowmarkt.src.valkey_client import ValkeyClient
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
 
 def main():
     credentials: Credentials = load_credentials()
@@ -30,24 +36,29 @@ def main():
         logging.error(f"Exception during valkey connection: {err}")
         exit()
 
+    # TODO: return obj, not tuple
     cache_token, cache_veid = valkey_client.get_credentials()
 
     if not all([cache_token, cache_veid]):
+        logging.info("No credentials in cache: retrieving new credentials")
         glowmarkt_client.retrieve_credentials()
         valkey_client.set_credentials(
-            token=glowmarkt_client.token, veid=glowmarkt_client.token
+            token=glowmarkt_client.token, veid=glowmarkt_client.veid
         )
     else:
-        glowmarkt_client.token = cache_token
-        glowmarkt_client.veid = cache_veid
+        logging.info("Found credentials")
+        glowmarkt_client.token = cache_token.decode("utf-8")
+        glowmarkt_client.veid = cache_veid.decode("utf-8")
 
     resources = glowmarkt_client.retrieve_resources()
 
     # TODO: Loop for all resources
     resource_id: str = resources[0].resourceId
 
+    logging.info("Retrieving delta")
     start_datetime = valkey_client.get_delta(delta_key=f"delta_{resource_id}")
     if start_datetime is None:
+        logging.info("No delta in cache: retrieving first reading")
         start_datetime = glowmarkt_client.retrieve_first_datetime_reading(
             resource_id=resource_id
         )
@@ -57,7 +68,7 @@ def main():
     )
 
     date_ranges = get_date_ranges(
-        start_datetime=start_datetime(resource_id=resource_id),
+        start_datetime=start_datetime,
         end_datetime=latest_datetime,
     )
 
