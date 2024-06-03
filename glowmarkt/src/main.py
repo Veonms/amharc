@@ -46,14 +46,19 @@ def main():
     # TODO: Loop for all resources
     resource_id: str = resources[0].resourceId
 
-    # TODO: Get delta from cache and compare
-    start_datetime = glowmarkt_client.retrieve_first_datetime_reading
+    start_datetime = valkey_client.get_delta(delta_key=f"delta_{resource_id}")
+    if start_datetime is None:
+        start_datetime = glowmarkt_client.retrieve_first_datetime_reading(
+            resource_id=resource_id
+        )
+
+    latest_datetime = glowmarkt_client.retrieve_latest_datetime_reading(
+        resource_id=resource_id
+    )
 
     date_ranges = get_date_ranges(
         start_datetime=start_datetime(resource_id=resource_id),
-        end_datetime=glowmarkt_client.retrieve_latest_datetime_reading(
-            resource_id=resource_id
-        ),
+        end_datetime=latest_datetime,
     )
 
     readings = []
@@ -72,6 +77,11 @@ def main():
         if reading.value == 0:
             continue
         print(reading)
+
+    valkey_client.set_delta(
+        delta_key=f"delta_{resource_id}", delta_value=latest_datetime
+    )
+    valkey_client.close_connection()
 
 
 if __name__ == "__main__":

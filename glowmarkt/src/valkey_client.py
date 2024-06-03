@@ -43,16 +43,16 @@ class ValkeyClient:
             return None
         return token, veid
 
-    def set_delta(self, delta: str) -> None:
+    def set_delta(self, delta_key: str, delta_value: str) -> None:
         try:
-            self.connection.set("delta", delta)
+            self.connection.set(name=delta_key, value=delta_value)
         except Exception as err:
             logging.error(f"Could not set the delta: {err}")
             raise err
 
-    def get_delta(self) -> Optional[str]:
+    def get_delta(self, delta_key) -> Optional[str]:
         try:
-            delta = self.connection.get("delta")
+            delta = self.connection.get(delta_key)
         except Exception as err:
             logging.error(f"Could not retrieve the delta: {err}")
             return None
