@@ -60,12 +60,11 @@ def main():
 
     # TODO: Make API calls asynchronous
     for date_range in date_ranges:
-        # TODO: return obj instead of tuple
         readings.extend(
             glowmarkt_client.retrieve_usage_readings(
                 resource_id=resource_id,
-                from_date=date_range[0],
-                to_date=date_range[1],
+                from_date=date_range.start_date,
+                to_date=date_range.end_date,
             )
         )
 

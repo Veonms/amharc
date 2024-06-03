@@ -11,6 +11,12 @@ class Credentials:
 
 
 @dataclass
+class DateRange:
+    start_date: str
+    end_date: str
+
+
+@dataclass
 class Resource:
     resourceTypeId: str
     name: str
