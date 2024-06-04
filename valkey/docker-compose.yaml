@@ -1,0 +1,7 @@
+services:
+  valkey:
+    image:
+      valkey/valkey:7.2
+    container_name: valkey
+    ports:
+      - 6379:6379

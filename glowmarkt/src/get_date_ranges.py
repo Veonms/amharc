@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from math import ceil
 
+from glowmarkt.src.data_model import DateRange
+
 
 def get_date_ranges(start_datetime: str, end_datetime: str):
     date_ranges = []
@@ -20,9 +22,9 @@ def get_date_ranges(start_datetime: str, end_datetime: str):
         if temp_end_date > end_date_obj:
             temp_end_date = end_date_obj
         date_ranges.append(
-            (
-                temp_start_date.strftime("%Y-%m-%dT%H:%M:%S"),
-                temp_end_date.strftime("%Y-%m-%dT%H:%M:%S"),
+            DateRange(
+                start_date=temp_start_date.strftime("%Y-%m-%dT%H:%M:%S"),
+                end_date=temp_end_date.strftime("%Y-%m-%dT%H:%M:%S"),
             )
         )
         temp_start_date += timedelta(days=10)

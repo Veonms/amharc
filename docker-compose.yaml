@@ -1,0 +1,5 @@
+services:
+  valkey:
+    extends:
+      file: valkey/docker-compose.yaml
+      service: valkey
