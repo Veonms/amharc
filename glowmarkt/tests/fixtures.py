@@ -10,8 +10,11 @@ class MockSession:
 
 
 class MockValkeyConnection:
-    def set(self, name: str, value: str, ex: Optional[int]):
+    def set(self, name: str, value: str, ex: Optional[int] = None) -> None:
         pass
 
-    def get(self):
+    def get(self, name: str) -> bytes:
+        pass
+
+    def close(self) -> None:
         pass

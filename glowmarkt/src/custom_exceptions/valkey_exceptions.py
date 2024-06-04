@@ -1,0 +1,2 @@
+class NoOpenConnectionException(Exception):
+    pass
