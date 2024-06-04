@@ -77,10 +77,3 @@ class ValkeyClient:
         if delta is not None:
             return delta.decode("utf-8")
         return delta
-
-    def set_virtual_entity_id(self, veid: str) -> None:
-        try:
-            self.connection.set("veid", veid)
-        except Exception as err:
-            logging.error(f"Could not set the veid: {err}")
-            raise err
