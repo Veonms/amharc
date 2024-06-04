@@ -38,7 +38,7 @@ def main():
 
     cached_creds: CachedCredentials = valkey_client.get_credentials()
 
-    if not all([cached_creds.bright_token, cached_creds.bright_veid]):
+    if cached_creds is None:
         logging.info("No credentials in cache: retrieving new credentials")
         glowmarkt_client.retrieve_credentials()
         valkey_client.set_credentials(
