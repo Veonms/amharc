@@ -7,7 +7,8 @@ from glowmarkt.src.data_model import CachedCredentials
 
 
 class ValkeyPool(Protocol):
-    pass
+    def close(self) -> None:
+        pass
 
 
 class ValkeyConnection(Protocol):
@@ -23,7 +24,7 @@ class ValkeyConnection(Protocol):
 
 class ValkeyClient:
     def __init__(self, host: str, port: str, db: int = 0):
-        self.pool: Optional[redis.ConnectionPool] = None
+        self.pool: Optional[ValkeyPool] = None
         self.connection: Optional[ValkeyConnection] = None
         self.host = host
         self.port = port
