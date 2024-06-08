@@ -1,0 +1,10 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:2.15.2-pg16
+    container_name: timescaledb
+    ports:
+      - 5432:5432
+    environment:
+      TIMESCALEDB_TELEMETRY: $(TIMESCALEDB_TELEMETRY)
+      POSTGRES_USER: $(POSTGRES_USER)
+      POSTGRES_PASSWORD: $(POSTGRES_PASSWORD)
