@@ -6,6 +6,7 @@ from glowmarkt.src.credentials import load_credentials
 from glowmarkt.src.data_model import Credentials, CachedCredentials
 from glowmarkt.src.get_date_ranges import get_date_ranges
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
+from glowmarkt.src.timescaledb_client import TimescaledbClient
 from glowmarkt.src.valkey_client import ValkeyClient
 
 logging.basicConfig(
@@ -16,6 +17,17 @@ logging.basicConfig(
 
 
 def main():
+    client = TimescaledbClient(
+        username="timescaledb",
+        password="password",
+        host="localhost",
+        port=5432,
+        database="postgres",
+    )
+    client.test_conn()
+
+
+def main2():
     credentials: Credentials = load_credentials()
 
     # Create clients
