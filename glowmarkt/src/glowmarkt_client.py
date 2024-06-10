@@ -199,7 +199,9 @@ class GlowmarktClient:
 
         readings = [
             Reading(
-                recorded_at=reading[0],
+                recorded_at=datetime.fromtimestamp(reading[0], tz=UTC).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
                 resource_id=resource_id,
                 reading_value=reading[1],
             )

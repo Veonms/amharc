@@ -66,9 +66,11 @@ class ValkeyClient:
         except Exception as err:
             logging.warning(f"Could not retrieve credentials: {err}")
             return None
+        if not token or not veid:
+            return None
         return CachedCredentials(
-            bright_token=token.decode("utf-8") if token else None,
-            bright_veid=veid.decode("utf-8") if veid else None,
+            bright_token=token.decode("utf-8"),
+            bright_veid=veid.decode("utf-8"),
         )
 
     def set_delta(self, delta_key: str, delta_value: str) -> None:

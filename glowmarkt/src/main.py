@@ -3,7 +3,7 @@ import logging
 import requests
 
 from glowmarkt.src.credentials import load_credentials
-from glowmarkt.src.data_model import Credentials, CachedCredentials
+from glowmarkt.src.data_model import Credentials, CachedCredentials, Resource
 from glowmarkt.src.get_date_ranges import get_date_ranges
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
 from glowmarkt.src.timescaledb_client import TimescaledbClient
@@ -17,17 +17,6 @@ logging.basicConfig(
 
 
 def main():
-    client = TimescaledbClient(
-        username="timescaledb",
-        password="password",
-        host="localhost",
-        port=5432,
-        database="postgres",
-    )
-    client.test_conn()
-
-
-def main2():
     credentials: Credentials = load_credentials()
 
     # Create clients
@@ -40,6 +29,14 @@ def main2():
         password=credentials.bright_password,
         application_id=credentials.bright_application_id,
         session=requests.Session(),
+    )
+
+    timescaledb_client = TimescaledbClient(
+        username="timescaledb",
+        password="password",
+        host="localhost",
+        port=5432,
+        database="glowmarkt",
     )
 
     try:
@@ -57,13 +54,17 @@ def main2():
             token=glowmarkt_client.token, veid=glowmarkt_client.veid
         )
     else:
-        logging.info("Found credentials")
+        logging.info("Found cached credentials")
         glowmarkt_client.token = cached_creds.bright_token
         glowmarkt_client.veid = cached_creds.bright_veid
 
-    resources = glowmarkt_client.retrieve_resources()
+    logging.info("Retrieving resources")
+    resources: list[Resource] = glowmarkt_client.retrieve_resources()
 
     # TODO: Loop for all resources
+    logging.info("Writing resources to db")
+    timescaledb_client.write_resources(resources)
+
     resource_id: str = resources[0].resource_id
 
     logging.info("Retrieving delta")
@@ -86,6 +87,7 @@ def main2():
     readings = []
 
     # TODO: Make API calls asynchronous
+    logging.info("Retrieving readings")
     for date_range in date_ranges:
         readings.extend(
             glowmarkt_client.retrieve_usage_readings(
@@ -95,14 +97,15 @@ def main2():
             )
         )
 
-    for reading in readings:
-        if reading.reading_value == 0:
-            continue
-        print(reading)
+    filtered_readings = [reading for reading in readings if reading.reading_value != 0]
 
-    valkey_client.set_delta(
-        delta_key=f"delta_{resource_id}", delta_value=latest_datetime
-    )
+    logging.info("Writing readings to db")
+    timescaledb_client.write_readings(filtered_readings)
+
+    # logging.info(f"Updating delta to {latest_datetime}")
+    # valkey_client.set_delta(
+    #     delta_key=f"delta_{resource_id}", delta_value=latest_datetime
+    # )
     valkey_client.close_connection()
 
 
