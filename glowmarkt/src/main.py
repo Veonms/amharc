@@ -61,51 +61,53 @@ def main():
     logging.info("Retrieving resources")
     resources: list[Resource] = glowmarkt_client.retrieve_resources()
 
-    # TODO: Loop for all resources
     logging.info("Writing resources to db")
     timescaledb_client.write_resources(resources)
 
-    resource_id: str = resources[0].resource_id
-
-    logging.info("Retrieving delta")
-    start_datetime = valkey_client.get_delta(delta_key=f"delta_{resource_id}")
-    if start_datetime is None:
-        logging.info("No delta in cache: retrieving first reading")
-        start_datetime = glowmarkt_client.retrieve_first_datetime_reading(
-            resource_id=resource_id
+    for resource in resources:
+        logging.info(f"Retrieving delta for resource {resource.resource_id}")
+        start_datetime = valkey_client.get_delta(
+            delta_key=f"delta_{resource.resource_id}"
         )
-
-    latest_datetime = glowmarkt_client.retrieve_latest_datetime_reading(
-        resource_id=resource_id
-    )
-
-    date_ranges = get_date_ranges(
-        start_datetime=start_datetime,
-        end_datetime=latest_datetime,
-    )
-
-    readings = []
-
-    # TODO: Make API calls asynchronous
-    logging.info("Retrieving readings")
-    for date_range in date_ranges:
-        readings.extend(
-            glowmarkt_client.retrieve_usage_readings(
-                resource_id=resource_id,
-                from_date=date_range.start_date,
-                to_date=date_range.end_date,
+        if start_datetime is None:
+            logging.info("No delta in cache: retrieving first reading")
+            start_datetime = glowmarkt_client.retrieve_first_datetime_reading(
+                resource_id=resource.resource_id
             )
+
+        latest_datetime = glowmarkt_client.retrieve_latest_datetime_reading(
+            resource_id=resource.resource_id
         )
 
-    filtered_readings = [reading for reading in readings if reading.reading_value != 0]
+        date_ranges = get_date_ranges(
+            start_datetime=start_datetime,
+            end_datetime=latest_datetime,
+        )
 
-    logging.info("Writing readings to db")
-    timescaledb_client.write_readings(filtered_readings)
+        readings = []
 
-    # logging.info(f"Updating delta to {latest_datetime}")
-    # valkey_client.set_delta(
-    #     delta_key=f"delta_{resource_id}", delta_value=latest_datetime
-    # )
+        # TODO: Make API calls asynchronous
+        logging.info("Retrieving readings")
+        for date_range in date_ranges:
+            readings.extend(
+                glowmarkt_client.retrieve_usage_readings(
+                    resource_id=resource.resource_id,
+                    from_date=date_range.start_date,
+                    to_date=date_range.end_date,
+                )
+            )
+
+        filtered_readings = [
+            reading for reading in readings if reading.reading_value != 0
+        ]
+
+        logging.info("Writing readings to db")
+        timescaledb_client.write_readings(filtered_readings)
+
+        logging.info(f"Updating delta to {latest_datetime}")
+        valkey_client.set_delta(
+            delta_key=f"delta_{resource.resource_id}", delta_value=latest_datetime
+        )
     valkey_client.close_connection()
 
 
