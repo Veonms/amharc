@@ -108,14 +108,14 @@ class GlowmarktClient:
 
         resources = [
             Resource(
-                resourceTypeId=resource.get("resourceTypeId", None),
+                resource_type_id=resource.get("resourceTypeId", None),
                 name=resource.get("name", None),
                 type=resource.get("dataSourceResourceTypeInfo", None).get("type", None),
                 description=resource.get("description", None),
-                dataSourceType=resource.get("dataSourceType", None),
-                baseUnit=resource.get("baseUnit", None),
-                resourceId=resource.get("resourceId", None),
-                createdAt=resource.get("createdAt", None),
+                data_source_type=resource.get("dataSourceType", None),
+                base_unit=resource.get("baseUnit", None),
+                resource_id=resource.get("resourceId", None),
+                created_at=resource.get("createdAt", None),
             )
             for resource in raw_resources
         ]
@@ -199,7 +199,9 @@ class GlowmarktClient:
 
         readings = [
             Reading(
-                recordedAt=reading[0], resourceId=resource_id, readingValue=reading[1]
+                recorded_at=reading[0],
+                resource_id=resource_id,
+                reading_value=reading[1],
             )
             for reading in raw_readings
         ]

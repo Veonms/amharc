@@ -31,7 +31,9 @@ def test_get_readings_successful(monkeypatch: pytest.MonkeyPatch):
         resource_id="test-resource-id", from_date="test-date", to_date="test-date"
     ) == [
         Reading(
-            recordedAt="test-timestamp", resourceId="test-resource-id", readingValue=5.0
+            recorded_at="test-timestamp",
+            resource_id="test-resource-id",
+            reading_value=5.0,
         )
     ]
 

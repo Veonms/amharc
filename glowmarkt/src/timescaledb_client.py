@@ -31,14 +31,14 @@ class TimescaledbClient:
                     f"baseUnit,"
                     f"resourceId,"
                     f"createdAt)"
-                    f"VALUES ({resource.resourceTypeId},"
+                    f"VALUES ({resource.resource_type_id},"
                     f"{resource.name},"
                     f"{resource.type},"
                     f"{resource.description},"
-                    f"{resource.dataSourceType},"
-                    f"{resource.baseUnit},"
-                    f"{resource.resourceId},"
-                    f"{resource.createdAt});"
+                    f"{resource.data_source_type},"
+                    f"{resource.base_unit},"
+                    f"{resource.resource_id},"
+                    f"{resource.created_at});"
                 )
             except psycopg2.Error as err:
                 logging.error(
@@ -51,7 +51,7 @@ class TimescaledbClient:
                 self.cursor.execute(
                     f"INSERT INTO readings"
                     f"(timestamp, resourceId, value)"
-                    f"VALUES ({reading.recordedAt}, {reading.resourceId}, {reading.readingValue});"
+                    f"VALUES ({reading.recorded_at}, {reading.resource_id}, {reading.reading_value});"
                 )
             except psycopg2.Error as err:
                 logging.error(

@@ -64,7 +64,7 @@ def main2():
     resources = glowmarkt_client.retrieve_resources()
 
     # TODO: Loop for all resources
-    resource_id: str = resources[0].resourceId
+    resource_id: str = resources[0].resource_id
 
     logging.info("Retrieving delta")
     start_datetime = valkey_client.get_delta(delta_key=f"delta_{resource_id}")
@@ -96,7 +96,7 @@ def main2():
         )
 
     for reading in readings:
-        if reading.readingValue == 0:
+        if reading.reading_value == 0:
             continue
         print(reading)
 

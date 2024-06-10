@@ -42,14 +42,14 @@ def test_get_resources_successful(monkeypatch: pytest.MonkeyPatch):
 
     assert client.retrieve_resources() == [
         Resource(
-            resourceTypeId="test-id",
+            resource_type_id="test-id",
             name="test-name",
             type="test-type",
             description="test-description",
-            dataSourceType="test-source-type",
-            baseUnit="test-base-unit",
-            resourceId="test-resource-id",
-            createdAt="test-timestamp",
+            data_source_type="test-source-type",
+            base_unit="test-base-unit",
+            resource_id="test-resource-id",
+            created_at="test-timestamp",
         )
     ]
 

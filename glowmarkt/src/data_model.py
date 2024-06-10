@@ -25,18 +25,18 @@ class DateRange:
 
 @dataclass
 class Resource:
-    resourceTypeId: str
+    resource_type_id: str
     name: str
     type: str
     description: str
-    dataSourceType: str
-    baseUnit: str
-    resourceId: str
-    createdAt: str
+    data_source_type: str
+    base_unit: str
+    resource_id: str
+    created_at: str
 
 
 @dataclass
 class Reading:
-    recordedAt: str
-    resourceId: str
-    readingValue: float
+    recorded_at: str
+    resource_id: str
+    reading_value: float
