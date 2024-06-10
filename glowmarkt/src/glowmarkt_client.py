@@ -198,7 +198,9 @@ class GlowmarktClient:
             raise NoReadingException(f"No readings retrieved from the request: {res}")
 
         readings = [
-            Reading(timestamp=reading[0], resourceId=resource_id, value=reading[1])
+            Reading(
+                recordedAt=reading[0], resourceId=resource_id, readingValue=reading[1]
+            )
             for reading in raw_readings
         ]
 

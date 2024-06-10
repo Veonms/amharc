@@ -96,7 +96,7 @@ def main2():
         )
 
     for reading in readings:
-        if reading.value == 0:
+        if reading.readingValue == 0:
             continue
         print(reading)
 

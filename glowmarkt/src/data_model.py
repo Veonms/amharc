@@ -37,6 +37,6 @@ class Resource:
 
 @dataclass
 class Reading:
-    timestamp: str
+    recordedAt: str
     resourceId: str
-    value: float
+    readingValue: float

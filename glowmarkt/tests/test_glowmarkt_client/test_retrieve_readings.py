@@ -29,7 +29,11 @@ def test_get_readings_successful(monkeypatch: pytest.MonkeyPatch):
 
     assert client.retrieve_usage_readings(
         resource_id="test-resource-id", from_date="test-date", to_date="test-date"
-    ) == [Reading(timestamp="test-timestamp", resourceId="test-resource-id", value=5.0)]
+    ) == [
+        Reading(
+            recordedAt="test-timestamp", resourceId="test-resource-id", readingValue=5.0
+        )
+    ]
 
 
 def test_get_readings_unsuccessful_no_reading(monkeypatch: pytest.MonkeyPatch):
