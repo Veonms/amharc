@@ -104,6 +104,7 @@ def main():
         logging.info("Writing readings to db")
         timescaledb_client.write_readings(filtered_readings)
 
+        # TODO: latest_datetime could have a reading of 0. Need to change to filtered_readings [-1]
         logging.info(f"Updating delta to {latest_datetime}")
         valkey_client.set_delta(
             delta_key=f"delta_{resource.resource_id}", delta_value=latest_datetime
