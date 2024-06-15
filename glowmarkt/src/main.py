@@ -65,9 +65,10 @@ def main():
 
     for resource in resources:
         logging.info(f"Retrieving delta for resource {resource.resource_id}")
-        start_datetime = valkey_client.get_delta(
-            delta_key=f"delta_{resource.resource_id}"
-        )
+        start_datetime = None
+        # start_datetime = valkey_client.get_delta(
+        #     delta_key=f"delta_{resource.resource_id}"
+        # )
         if start_datetime is None:
             logging.info("No delta in cache: retrieving first reading")
             start_datetime = glowmarkt_client.retrieve_first_datetime_reading(
