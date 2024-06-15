@@ -7,6 +7,10 @@ services:
     extends:
       file: timescaledb/docker-compose.yaml
       service: timescaledb
+  superset:
+    extends:
+      file: superset/docker-compose.yaml
+      service: superset
 volumes:
   timescale_data:
   valkey_data:

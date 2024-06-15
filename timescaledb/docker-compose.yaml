@@ -7,4 +7,4 @@ services:
     env_file: .env
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - timescale_data:/home/postgres/pgdata/data/
+      - timescale_data:/var/lib/postgresql/data

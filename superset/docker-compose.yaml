@@ -1,0 +1,7 @@
+services:
+  superset:
+    image: apache/superset
+    container_name: superset
+    ports:
+      - 8080:8088
+    env_file: .env
