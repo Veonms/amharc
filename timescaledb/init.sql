@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS resources (
 CREATE TABLE IF NOT EXISTS readings (
     recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     resource_id TEXT NOT NULL,
-    reading_value TEXT NOT NULL,
+    reading_value NUMERIC(7,4) NOT NULL,
     FOREIGN KEY (resource_id) REFERENCES resources (resource_id)
 );
 
