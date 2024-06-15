@@ -3,7 +3,7 @@ import logging
 import requests
 
 from glowmarkt.src.credentials import load_credentials
-from glowmarkt.src.data_model import Credentials, CachedCredentials, Resource
+from glowmarkt.src.data_model import Credentials, Resource
 from glowmarkt.src.get_date_ranges import get_date_ranges
 from glowmarkt.src.glowmarkt_client import GlowmarktClient
 from glowmarkt.src.timescaledb_client import TimescaledbClient
@@ -23,7 +23,6 @@ def main():
     valkey_client = ValkeyClient(
         host=credentials.valkey_host, port=credentials.valkey_port
     )
-    # TODO: Close session from GlowmarktClient
     glowmarkt_client = GlowmarktClient(
         username=credentials.bright_username,
         password=credentials.bright_password,
@@ -45,7 +44,7 @@ def main():
         logging.error(f"Exception during valkey connection: {err}")
         exit()
 
-    cached_creds: CachedCredentials = valkey_client.get_credentials()
+    cached_creds = valkey_client.get_credentials()
 
     if cached_creds is None:
         logging.info("No credentials in cache: retrieving new credentials")
@@ -109,6 +108,9 @@ def main():
         valkey_client.set_delta(
             delta_key=f"delta_{resource.resource_id}", delta_value=latest_datetime
         )
+
+    # TODO: Close session from GlowmarktClient
+    # TODO: Close timescaleDB connection
     valkey_client.close_connection()
 
 

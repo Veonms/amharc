@@ -7,3 +7,6 @@ services:
     extends:
       file: timescaledb/docker-compose.yaml
       service: timescaledb
+volumes:
+  timescale_data:
+  valkey_data:
