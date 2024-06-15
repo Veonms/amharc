@@ -1,0 +1,10 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:2.15.2-pg16
+    container_name: timescaledb
+    ports:
+      - 5432:5432
+    env_file: .env
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - timescale_data:/home/postgres/pgdata/data/

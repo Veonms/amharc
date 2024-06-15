@@ -3,3 +3,10 @@ services:
     extends:
       file: valkey/docker-compose.yaml
       service: valkey
+  timescaledb:
+    extends:
+      file: timescaledb/docker-compose.yaml
+      service: timescaledb
+volumes:
+  timescale_data:
+  valkey_data:

@@ -10,7 +10,7 @@ def test_get_readings_successful(monkeypatch: pytest.MonkeyPatch):
     session = MockSession()
 
     def mock_request(*args, **kwargs):
-        return {"data": [["test-timestamp", 5.0]]}
+        return {"data": [[1549472400, 5.0]]}
 
     monkeypatch.setattr(
         "glowmarkt.src.glowmarkt_client.GlowmarktClient._execute_get_request",
@@ -29,7 +29,13 @@ def test_get_readings_successful(monkeypatch: pytest.MonkeyPatch):
 
     assert client.retrieve_usage_readings(
         resource_id="test-resource-id", from_date="test-date", to_date="test-date"
-    ) == [Reading(timestamp="test-timestamp", resourceId="test-resource-id", value=5.0)]
+    ) == [
+        Reading(
+            recorded_at="2019-02-06 17:00:00",
+            resource_id="test-resource-id",
+            reading_value=5.0,
+        )
+    ]
 
 
 def test_get_readings_unsuccessful_no_reading(monkeypatch: pytest.MonkeyPatch):
